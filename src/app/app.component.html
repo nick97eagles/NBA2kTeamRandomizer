@@ -1,0 +1,72 @@
+<main class="main">
+  <div class="content">
+    <h1>NBA2K Team Randomizer</h1>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <p>Select specific teams to randomize or deselect all to randomize all teams</p>
+      <div class="checkbox-container" formArrayName="checkboxes">
+        <div *ngFor="let option of checkboxOptions; let i = index">
+          <mat-checkbox
+            [id]="option.value"
+            [formControlName]="i"
+            (change)="onCheckboxChange($event)">
+            {{option.name}}
+          </mat-checkbox>
+        </div>
+      </div>
+      <br>
+      &nbsp;
+      <ng-container *ngIf="selectedValues.length > 0">
+        <button mat-button type="button" (click)="deselectAll()">Deselect All</button>
+      </ng-container>
+
+      <ng-container *ngIf="showNumOfTeams">
+        <p>How many teams to do you want to randomly select</p>
+        <mat-form-field>
+          <input
+            matInput
+            type="number"
+            max="29"
+            formControlName="numOfTeams">
+          <mat-error *ngIf="form.get('numOfTeams')?.hasError('max')">
+            Can only select a max of {{ maxValue }} teams
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
+      <br><br><br>
+
+      <ng-container *ngIf="!shouldReset; else Reset">
+        <button mat-fab extended type="submit">
+          <fa-icon [icon]="shuffleIcon"></fa-icon>
+          Randomize
+        </button>
+      </ng-container>
+      <ng-template #Reset>
+        <button mat-fab extended type="button" (click)="reset()">Reset</button>
+      </ng-template>
+    </form>
+
+    <br><br>
+
+    <div *ngIf="showSelectedTeams && !showFinalTeam" class="selected-teams-container">
+      <p>Your randomly selected teams are:</p>
+      <ul>
+        <li *ngFor="let team of randomlySelectedTeams">
+          {{ team.name }}
+        </li>
+      </ul>
+      <p class="final-pick">One final pick?
+        <button class="final-pick-btn" mat-raised-button (click)="finalChoice()">Go all in</button>
+      </p>
+    </div>
+
+    <div *ngIf="!showSelectedTeams && showFinalTeam">
+      <ul>
+        <li *ngFor="let team of randomlySelectedTeams">
+          Final option: {{ team.name }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</main>
+<router-outlet />
